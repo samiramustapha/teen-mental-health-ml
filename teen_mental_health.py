@@ -23,7 +23,7 @@ def main():
     df = df.drop_duplicates()
     df = df.dropna()
     print("DATA INFO:")
-    print(df.info()) # structure of the data; 3 categorical & 10 numerical columns
+    df.info() # structure of the data; 3 categorical & 10 numerical columns
     
 
     # ---------- SCIENTIFIC COMPUTATION ----------
@@ -115,7 +115,7 @@ def main():
     disp.plot(ax=ax[1], cmap='Blues')
     ax[1].set_title('ML Model: Confusion Matrix')
     fig.tight_layout()
-    fig.savefig('teen_mental_health_data_analysis')
+    fig.savefig('teen_mental_health_data_analysis.png', dpi=150)
     plt.show()
     
     # ---------- USER INPUT: "DEEP DIVE" ----------
@@ -125,23 +125,32 @@ def main():
       dive = input("What would you like to explore?\n1. Stress, anxiety, and depression in a specific age group\n2. Screen addiction and depression rate by platform\n3. Depression rates between high vs. low social media rates\nEnter 1, 2, or 3: ")
 
     if dive == '1':
-      age = int(input("Which age (13-19) would you like to examine? "))
-      while not 13 <= age <= 19:
-         age = int(input("Which age (13-19) would you like to examine? "))
+      age = input("Which age (13-19) would you like to examine? ")
+      while not age.isdigit() or not 13 <= int(age) <= 19:
+         age = input("Which age (13-19) would you like to examine? ")
+      age = int(age)
       age_df = df[df['age'] == age]
-      print(f"\nFor teens aged {age}:")
-      print(f"Average stress: {age_df['stress_level'].mean():.2f}")
-      print(f"Average anxiety: {age_df['anxiety_level'].mean():.2f}")
-      print(f"Depression rate: {(age_df['depression_label'].sum() / len(age_df)) * 100:.2f}%")
+      if len(age_df) == 0:
+         print(f"\nNo teens aged {age} in this dataset.")
+      else:
+         print(f"\nFor teens aged {age}:")
+         print(f"Average stress: {age_df['stress_level'].mean():.2f}")
+         print(f"Average anxiety: {age_df['anxiety_level'].mean():.2f}")
+         print(f"Depression rate: {(age_df['depression_label'].sum() / len(age_df)) * 100:.2f}%")
     elif dive == '2':
-      platform = input("Enter the platform you'd like to explore (Instagram/TikTok/Both): ")
-      while platform != "Instagram" and platform != "TikTok" and platform != "Both":
-         platform = input("Enter the platform you'd like to explore (Instagram/TikTok/Both): ")
+      valid_platforms = {'instagram': 'Instagram', 'tiktok': 'TikTok', 'both': 'Both'}
+      platform = input("Enter the platform you'd like to explore (Instagram/TikTok/Both): ").strip().lower()
+      while platform not in valid_platforms:
+         platform = input("Enter the platform you'd like to explore (Instagram/TikTok/Both): ").strip().lower()
+      platform = valid_platforms[platform]
       platform_data = df[df['platform_usage'] == platform]
-      print(f"\nScreen addiction and depression in {platform} users:")
-      print(f"Average daily usage: {platform_data['daily_social_media_hours'].mean():.2f} hours")
-      print(f"Average addiction level: {platform_data['addiction_level'].mean():.2f}")
-      print(f"Depression rate: {(platform_data['depression_label'].sum() / len(platform_data)) * 100:.2f}%")
+      if len(platform_data) == 0:
+         print(f"\nNo {platform} users in this dataset.")
+      else:
+         print(f"\nScreen addiction and depression in {platform} users:")
+         print(f"Average daily usage: {platform_data['daily_social_media_hours'].mean():.2f} hours")
+         print(f"Average addiction level: {platform_data['addiction_level'].mean():.2f}")
+         print(f"Depression rate: {(platform_data['depression_label'].sum() / len(platform_data)) * 100:.2f}%")
     elif dive == '3':
       median = df['daily_social_media_hours'].median()
       low_users = df[df['daily_social_media_hours'] <= median]
