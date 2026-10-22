@@ -1,0 +1,14 @@
+# dataset is not redistributed here - see README
+*.csv
+
+# generated figures
+*.png
+teen_mental_health_data_analysis
+
+# python / env / editor junk
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
